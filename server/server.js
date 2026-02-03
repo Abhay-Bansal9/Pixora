@@ -1,23 +1,28 @@
 import 'dotenv/config';
-import express from 'express'
-import cors from 'cors'
+import express from 'express';
+import cors from 'cors';
+
 import userRouter from './routes/userRoutes.js';
-import connectDB from './configs/mongodb.js';
 import imageRouter from './routes/imageRoutes.js';
+import connectDB from './configs/mongodb.js';
 
-// App Config
-const PORT = process.env.PORT || 4000
 const app = express();
-await connectDB()
 
-// Intialize Middlewares
-app.use(express.json())
-app.use(cors())
+// Connect DB
+await connectDB();
 
-// API routes
-app.use('/api/user',userRouter)
-app.use('/api/image',imageRouter)
+// Middlewares
+app.use(express.json());
+app.use(cors());
 
-app.get('/', (req,res) => res.send("API Working"))
+// Routes
+app.use('/api/user', userRouter);
+app.use('/api/image', imageRouter);
 
-app.listen(PORT, () => console.log('Server running on port ' + PORT));
+// Test route
+app.get('/api/health', (req, res) => {
+  res.send("API Working");
+});
+
+// ❌ REMOVE app.listen
+export default app;

@@ -12,7 +12,7 @@ const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
-    const { backendUrl, setShowLogin, setToken, setUser } = useContext(AppContext)
+    const {setShowLogin, setToken, setUser } = useContext(AppContext)
 
     const onSubmitHandler = async (e) => {
         e.preventDefault()
@@ -21,7 +21,7 @@ const Login = () => {
 
             if (state === 'Login') {
 
-                const { data } = await axios.post(backendUrl + '/api/user/login', { email, password })
+                const { data } = await axios.post('/api/user/login', { email, password })
 
                 if (data.success) {
                     setToken(data.token)
@@ -34,7 +34,7 @@ const Login = () => {
 
             } else {
 
-                const { data } = await axios.post(backendUrl + '/api/user/register', { name, email, password })
+                const { data } = await axios.post('/api/user/register', { name, email, password })
 
                 if (data.success) {
                     setToken(data.token)
