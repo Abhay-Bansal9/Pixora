@@ -8,21 +8,41 @@ import connectDB from './configs/mongodb.js';
 
 const app = express();
 
-// Connect DB
-await connectDB();
+let isConnected = false;
 
-// Middlewares
+// connect DB lazily (serverless-safe)
+async function ensureDB() {
+  if (!isConnected) {
+    await connectDB();
+    isConnected = true;
+  }
+}
+
+// middlewares
 app.use(express.json());
 app.use(cors());
 
-// Routes
+// ensure DB before handling requests
+app.use(async (req, res, next) => {
+  try {
+    await ensureDB();
+    next();
+  } catch (err) {
+    console.error("MongoDB connection failed:", err);
+    res.status(500).json({
+      success: false,
+      message: "Database connection failed"
+    });
+  }
+});
+
+// routes
 app.use('/api/user', userRouter);
 app.use('/api/image', imageRouter);
 
-// Test route
+// health check
 app.get('/api/health', (req, res) => {
   res.send("API Working");
 });
 
-// ❌ REMOVE app.listen
 export default app;
